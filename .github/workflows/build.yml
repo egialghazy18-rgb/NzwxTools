@@ -25,6 +25,13 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Generate android template
+        run: |
+          flutter create --org com.nzwx --project-name nzwx tmp_android
+          cp -r tmp_android/android ./
+          cp tmp_android/.metadata ./ 2>/dev/null || true
+          rm -rf tmp_android
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -37,11 +44,3 @@ jobs:
           name: nzwx-release
           path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
